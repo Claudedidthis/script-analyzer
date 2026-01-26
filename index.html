@@ -3,975 +3,628 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agentforce Script Review: RestaurantScriptAgent3</title>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>The Useless Box</title>
     <style>
-        :root {
-            --bg-dark: #0a0a0f;
-            --bg-card: #12121a;
-            --bg-card-hover: #1a1a25;
-            --border: #2a2a3a;
-            --text-primary: #e8e8ec;
-            --text-secondary: #8888a0;
-            --text-muted: #55556a;
-            --accent-red: #ff4757;
-            --accent-red-glow: rgba(255, 71, 87, 0.3);
-            --accent-orange: #ffa502;
-            --accent-orange-glow: rgba(255, 165, 2, 0.3);
-            --accent-yellow: #ffdd59;
-            --accent-blue: #3742fa;
-            --accent-cyan: #00d2d3;
-            --accent-green: #26de81;
-            --accent-green-glow: rgba(38, 222, 129, 0.3);
-            --gradient-hero: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Outfit', -apple-system, sans-serif;
-            background: var(--bg-dark);
-            color: var(--text-primary);
-            line-height: 1.7;
-            font-size: 16px;
-        }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-dark); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-        .hero {
-            background: var(--gradient-hero);
-            padding: 80px 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(255, 71, 87, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0, 210, 211, 0.1) 0%, transparent 50%);
-            pointer-events: none;
-        }
-
-        .hero-badge {
-            display: inline-block;
-            background: rgba(38, 222, 129, 0.15);
-            border: 1px solid var(--accent-green);
-            color: var(--accent-green);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            margin-bottom: 24px;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 var(--accent-green-glow); }
-            50% { box-shadow: 0 0 20px 5px var(--accent-green-glow); }
-        }
-
-        .hero h1 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 700;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-cyan) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero-subtitle { font-size: 1.25rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto 32px; }
-        .hero-meta { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; font-size: 14px; color: var(--text-muted); }
-        .hero-meta span { display: flex; align-items: center; gap: 8px; }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 60px 24px; }
-        .section-header { margin-bottom: 40px; }
-        .section-header h2 { font-size: 2rem; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
-        .section-header p { color: var(--text-secondary); font-size: 1.1rem; }
-
-        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 60px; }
-
-        .summary-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 28px;
-            text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .summary-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
-        .summary-card.bug::before { background: var(--accent-red); }
-        .summary-card.risk::before { background: var(--accent-orange); }
-        .summary-card.style::before { background: var(--accent-cyan); }
-
-        .summary-card:hover { transform: translateY(-4px); border-color: var(--text-muted); }
-
-        .summary-card .count { font-size: 3.5rem; font-weight: 700; line-height: 1; margin-bottom: 8px; }
-        .summary-card.bug .count { color: var(--accent-red); }
-        .summary-card.risk .count { color: var(--accent-orange); }
-        .summary-card.style .count { color: var(--accent-cyan); }
-
-        .summary-card .label { font-size: 14px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
-        .summary-card .sublabel { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
-
-        .issues-section { margin-bottom: 60px; }
-
-        .issue-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            margin-bottom: 24px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .issue-card:hover { border-color: var(--text-muted); }
-
-        .issue-header {
-            padding: 24px 28px;
+            min-height: 100vh;
             display: flex;
-            align-items: flex-start;
-            gap: 16px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .issue-badge {
-            flex-shrink: 0;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .issue-badge.bug { background: rgba(255, 71, 87, 0.15); color: var(--accent-red); border: 1px solid var(--accent-red); }
-        .issue-badge.risk { background: rgba(255, 165, 2, 0.15); color: var(--accent-orange); border: 1px solid var(--accent-orange); }
-        .issue-badge.style { background: rgba(0, 210, 211, 0.15); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); }
-
-        .issue-title { flex: 1; }
-        .issue-title h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 4px; }
-        .issue-title .location { font-size: 13px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
-
-        .issue-content { padding: 28px; }
-        .issue-content p { margin-bottom: 16px; color: var(--text-secondary); }
-        .issue-content strong { color: var(--text-primary); }
-
-        pre {
-            background: #0d0d12;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            overflow-x: auto;
-            margin: 16px 0;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-
-        code {
-            font-family: 'JetBrains Mono', monospace;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.9em;
-        }
-
-        pre code { background: none; padding: 0; }
-        .code-comment { color: #6a6a7a; }
-        .code-keyword { color: var(--accent-cyan); }
-        .code-string { color: var(--accent-green); }
-        .code-variable { color: var(--accent-orange); }
-
-        .fix-box {
-            background: rgba(38, 222, 129, 0.08);
-            border: 1px solid rgba(38, 222, 129, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 16px;
-        }
-
-        .fix-box h4 { color: var(--accent-green); font-size: 14px; font-weight: 600; margin-bottom: 12px; }
-
-        .alternatives-box {
-            background: rgba(55, 66, 250, 0.08);
-            border: 1px solid rgba(55, 66, 250, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 16px;
-        }
-
-        .alternatives-box h4 { color: var(--accent-blue); font-size: 14px; font-weight: 600; margin-bottom: 12px; }
-
-        .callout {
-            background: rgba(255, 165, 2, 0.08);
-            border: 1px solid rgba(255, 165, 2, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        .callout h4 { color: var(--accent-orange); font-size: 14px; font-weight: 600; margin-bottom: 8px; }
-        .callout p { color: var(--text-secondary); margin: 0; font-size: 14px; }
-
-        .info-notice {
-            background: linear-gradient(135deg, rgba(55, 66, 250, 0.1) 0%, rgba(0, 210, 211, 0.1) 100%);
-            border: 1px solid rgba(55, 66, 250, 0.3);
-            border-radius: 16px;
-            padding: 24px 28px;
-            margin-bottom: 40px;
-        }
-
-        .info-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-        .info-icon { font-size: 24px; }
-        .info-header h3 { color: var(--accent-cyan); font-size: 1.1rem; font-weight: 600; }
-        .info-notice p { color: var(--text-secondary); margin-bottom: 16px; }
-        .info-notice ul { list-style: none; }
-        .info-notice li { padding: 8px 0; color: var(--text-secondary); border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 14px; }
-        .info-notice li:last-child { border-bottom: none; }
-        .info-notice li strong { color: var(--text-primary); }
-
-        .tabs {
-            display: flex;
-            gap: 4px;
-            background: var(--bg-card);
-            padding: 4px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            border: 1px solid var(--border);
-        }
-
-        .tab {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            font-family: 'Outfit', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .tab:hover { color: var(--text-primary); }
-        .tab.active { background: var(--accent-blue); color: white; }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        .diagram-section { margin: 60px 0; }
-
-        .diagram-container {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 40px;
-            overflow-x: auto;
-        }
-
-        .diagram-container .mermaid { display: flex; justify-content: center; }
-
-        .positive-section {
-            background: rgba(38, 222, 129, 0.05);
-            border: 1px solid rgba(38, 222, 129, 0.2);
-            border-radius: 16px;
-            padding: 32px;
-            margin: 60px 0;
-        }
-
-        .positive-section h3 { color: var(--accent-green); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        .positive-list { list-style: none; }
-        .positive-list li { padding: 12px 0; border-bottom: 1px solid rgba(38, 222, 129, 0.1); display: flex; align-items: flex-start; gap: 12px; color: var(--text-secondary); }
-        .positive-list li:last-child { border-bottom: none; }
-        .positive-list li::before { content: '✓'; color: var(--accent-green); font-weight: bold; }
-
-        .solution-section {
-            background: linear-gradient(135deg, rgba(38, 222, 129, 0.08) 0%, rgba(0, 210, 211, 0.08) 100%);
-            border: 1px solid rgba(38, 222, 129, 0.3);
-            border-radius: 20px;
-            padding: 40px;
-            margin-top: 20px;
-        }
-
-        .solution-header { margin-bottom: 32px; }
-        .solution-header h3 { color: var(--accent-green); font-size: 1.5rem; margin-bottom: 8px; font-family: 'JetBrains Mono', monospace; }
-        .solution-header p { color: var(--text-secondary); }
-
-        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 32px; }
-
-        .feature-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
-
-        .feature-icon { font-size: 20px; flex-shrink: 0; }
-        .feature-text { display: flex; flex-direction: column; gap: 4px; }
-        .feature-text strong { color: var(--text-primary); font-size: 14px; }
-        .feature-text span { color: var(--text-muted); font-size: 13px; }
-
-        .code-section {
-            background: #0a0a0f;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            overflow: hidden;
-        }
-
-        .code-header {
-            background: var(--bg-card);
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, #c9b896 0%, #b8a67a 100%);
         }
 
-        .code-header span { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-secondary); }
+        h1 {
+            color: #5a4830;
+            font-family: 'Georgia', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: normal;
+        }
 
-        .copy-btn {
-            background: var(--accent-blue);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
+        .container {
+            width: 600px;
+            height: 500px;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        #switchLever {
+            transform-origin: 355px 187px;
+            transition: transform 0.1s ease-out;
+        }
+        #switchLever.on {
+            transform: rotate(25deg);
+        }
+
+        #lid {
+            transform-origin: 252px 174px;
+            transition: transform 0.3s ease-out;
+        }
+        #lid.open {
+            transform: rotate(-75deg);
+        }
+
+        #arm {
+            opacity: 0;
+            transform-origin: 340px 178px;
+            transition: transform 0.3s ease-out, opacity 0.15s;
+        }
+        #arm.emerge {
+            opacity: 1;
+            transform: rotate(35deg);
+        }
+        #arm.flick {
+            opacity: 1;
+            transform: rotate(50deg);
+            transition: transform 0.1s ease-in-out;
+        }
+        #arm.retract {
+            opacity: 1;
+            transform: rotate(0deg);
+            transition: transform 0.2s ease-in, opacity 0.1s 0.15s;
+        }
+
+        .clickable {
             cursor: pointer;
-            font-family: 'Outfit', sans-serif;
-            transition: all 0.2s ease;
         }
 
-        .copy-btn:hover { background: #4c54ff; }
-
-        .code-section pre { margin: 0; padding: 24px; max-height: 600px; overflow: auto; border: none; border-radius: 0; }
-        .code-section code { background: none; padding: 0; font-size: 12px; line-height: 1.5; color: var(--text-secondary); }
-
-        .footer {
+        .instructions {
+            margin-top: 1.5rem;
+            color: #5a4830;
+            font-size: 1.5rem;
+            font-family: 'Georgia', serif;
+            max-width: 500px;
             text-align: center;
-            padding: 40px;
-            border-top: 1px solid var(--border);
-            color: var(--text-muted);
-            font-size: 14px;
+            min-height: 2.5em;
         }
 
-        .footer a { color: var(--accent-cyan); text-decoration: none; }
+        .counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: #6a5a40;
+            font-size: 1.2rem;
+            font-family: 'Georgia', serif;
+        }
 
-        @media (max-width: 768px) {
-            .hero { padding: 60px 20px; }
-            .container { padding: 40px 16px; }
-            .hero-meta { flex-direction: column; gap: 12px; }
+        .sound-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(90, 72, 48, 0.2);
+            border: 2px solid #8a7a60;
+            color: #5a4830;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-family: 'Georgia', serif;
+            transition: all 0.2s;
+        }
+
+        .sound-toggle:hover {
+            background: rgba(90, 72, 48, 0.3);
         }
     </style>
 </head>
 <body>
-    <header class="hero">
-        <div class="hero-badge">✅ Verified Against SF Docs</div>
-        <h1>Agentforce Script Review</h1>
-        <p class="hero-subtitle">RestaurantScriptAgent3 — OpenTable Support Agent</p>
-        <div class="hero-meta">
-            <span>📅 Reviewed: 15 January 2026</span>
-            <span>✅ Documentation Verified</span>
-            <span>📄 480 Lines Analyzed</span>
-        </div>
-    </header>
-
-    <section class="container">
-        <div class="section-header">
-            <h2>📊 Issue Summary</h2>
-            <p>Categorized by type: Bugs (must fix), Risks (should address), Style (consider)</p>
-        </div>
-
-        <div class="summary-grid">
-            <div class="summary-card bug">
-                <div class="count">2</div>
-                <div class="label">Bugs</div>
-                <div class="sublabel">Must Fix</div>
-            </div>
-            <div class="summary-card risk">
-                <div class="count">4</div>
-                <div class="label">Risks</div>
-                <div class="sublabel">Should Address</div>
-            </div>
-            <div class="summary-card style">
-                <div class="count">5</div>
-                <div class="label">Style</div>
-                <div class="sublabel">Consider</div>
-            </div>
-        </div>
-
-        <div class="info-notice">
-            <div class="info-header">
-                <span class="info-icon">⚡</span>
-                <h3>Execution Order Reference</h3>
-            </div>
-            <p>Understanding execution order is critical for identifying real bugs vs valid patterns:</p>
-            <ul>
-                <li><strong>1. Expressions execute first:</strong> All expressions in <code>before_reasoning</code> AND <code>instructions</code> run top-to-bottom BEFORE the LLM sees anything.</li>
-                <li><strong>2. Pipe content becomes prompt:</strong> Only <code>|</code> content goes to the LLM. Expressions are NOT part of the prompt.</li>
-                <li><strong>3. LLM reasoning:</strong> LLM processes the prompt and may choose to call actions.</li>
-                <li><strong>4. after_reasoning:</strong> Runs after LLM completes. Variables set during reasoning may not be populated yet.</li>
-            </ul>
-        </div>
-
-        <div class="section-header">
-            <h2>🎯 Script Intent</h2>
-            <p>What this agent is designed to do</p>
-        </div>
-
-        <div class="issue-card">
-            <div class="issue-content">
-                <p><strong>RestaurantScriptAgent3</strong> is an OpenTable support agent designed to:</p>
-                <ol style="margin-left: 20px; color: var(--text-secondary);">
-                    <li><strong>Welcome & Route</strong> — Greet users and classify intent to appropriate topic</li>
-                    <li><strong>Pre-Escalation</strong> — Gather issue description, offer Ticket or Phone options</li>
-                    <li><strong>Create Case</strong> — Collect user details and create support case via Flow</li>
-                    <li><strong>Escalate</strong> — Transfer to human agent after case creation</li>
-                    <li><strong>Knowledge Topics</strong> — Answer reservation and general questions via knowledge base</li>
-                </ol>
-            </div>
-        </div>
-    </section>
-
-    <section class="container diagram-section">
-        <div class="section-header">
-            <h2>🔀 Current Logic Flow</h2>
-            <p>Visual representation — red nodes indicate bugs, orange indicates risks</p>
-        </div>
-
-        <div class="tabs">
-            <button class="tab active" onclick="showTab('current')">Current Flow (with issues)</button>
-            <button class="tab" onclick="showTab('fixed')">Fixed Flow</button>
-        </div>
-
-        <div id="current" class="tab-content active">
-            <div class="diagram-container">
-                <div class="mermaid">
-flowchart TD
-    subgraph Entry["Entry"]
-        A["User Message"] --> B["start_agent Topic_Selector"]
-    end
+    <h1>The Useless Box</h1>
     
-    subgraph TopicSelector["Topic_Selector"]
-        B --> C{"Check current_topic variable"}
-        C -->|"current_topic == Pre_Escalation"| D["transition to Pre_Escalation"]
-        C -->|"Otherwise"| E{"LLM Classifies Intent"}
-        E -->|"Escalation/Human/Issue"| F["go_to_Pre_Escalation"]
-        E -->|"Reservation"| G["go_to_Reservation"]
-        E -->|"General"| H["go_to_General"]
-    end
-    
-    subgraph PreEsc["Pre_Escalation_Management"]
-        F --> I["Set current_topic"]
-        D --> I
-        I --> J["Gather Description"]
-        J --> K["Offer: Ticket or Phone"]
-        K --> L{"LLM calls setVariables?"}
-        L -->|"Yes Ticket"| M["UserSelection = Ticket"]
-        L -->|"Yes Phone"| N["UserSelection = Phone"]
-        L -->|"No"| O["Variables Empty"]
-        M --> P["after_reasoning checks"]
-        N --> P
-        O --> P
-        P -->|"Ticket"| Q["to Create_a_Case"]
-        P -->|"Phone"| R["Get Phone"]
-        P -->|"Empty"| S["STUCK"]
-    end
-    
-    subgraph CreateCase["Create_a_Case"]
-        Q --> T["LLM gathers 5+ fields"]
-        T --> U{"Create action called?"}
-        U -->|"Yes"| V["Case Created"]
-        U -->|"No"| W["Failure"]
-        V --> X["after_reasoning checks"]
-        X -->|"True"| Y["to Escalation"]
-        X -->|"False"| Z["STUCK"]
-    end
-    
-    subgraph Knowledge["Knowledge Topics"]
-        G --> AC["Search KB"]
-        H --> AC
-        AC --> AD["Return Answer"]
-    end
-    
-    style S fill:#ff4757,stroke:#333,color:#fff
-    style W fill:#ff4757,stroke:#333,color:#fff
-    style Z fill:#ff4757,stroke:#333,color:#fff
-    style O fill:#ffa502,stroke:#333,color:#000
-    style C fill:#ffa502,stroke:#333,color:#000
-                </div>
-            </div>
-        </div>
+    <div class="container">
+        <svg viewBox="0 0 600 500">
+            <defs>
+                <linearGradient id="woodTop" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#f5edd8"/>
+                    <stop offset="50%" style="stop-color:#ebe3cc"/>
+                    <stop offset="100%" style="stop-color:#e0d6be"/>
+                </linearGradient>
+                
+                <linearGradient id="woodUnder" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#d8d0b8"/>
+                    <stop offset="100%" style="stop-color:#c8bc9c"/>
+                </linearGradient>
+                
+                <linearGradient id="woodFront" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#e5dbc5"/>
+                    <stop offset="100%" style="stop-color:#d0c4a8"/>
+                </linearGradient>
+                
+                <linearGradient id="woodLeft" x1="100%" y1="0%" x2="0%" y2="0%">
+                    <stop offset="0%" style="stop-color:#ddd3bb"/>
+                    <stop offset="100%" style="stop-color:#c5b89c"/>
+                </linearGradient>
 
-        <div id="fixed" class="tab-content">
-            <div class="diagram-container">
-                <div class="mermaid">
-flowchart TD
-    subgraph Entry["Entry"]
-        A["User Message"] --> B["Topic_Selector"]
-    end
-    
-    subgraph TopicSelector["Topic_Selector"]
-        B --> C{"LLM Classifies Intent"}
-        C -->|"Support/Issue"| D["go_to_support"]
-        C -->|"Reservation"| E["go_to_reservations"]
-        C -->|"General"| F["go_to_general"]
-    end
-    
-    subgraph PreEsc["Pre_Escalation"]
-        D --> G["Gather Description"]
-        G --> H{"Clear?"}
-        H -->|"No"| G
-        H -->|"Yes"| I["Mark Billing if mentioned"]
-        I --> J["Offer Options"]
-        J --> K{"User Choice"}
-        K -->|"Ticket"| L["go_to_ticket action"]
-        K -->|"Phone"| M["get_phone action"]
-    end
-    
-    subgraph GatherInfo["Gather_Case_Info"]
-        L --> O{"Has Required Data?"}
-        O -->|"Yes"| P["Skip to Create"]
-        O -->|"No"| Q["Collect Info"]
-        Q --> R{"Complete?"}
-        R -->|"No"| Q
-        R -->|"Yes"| S["proceed_to_case"]
-    end
-    
-    subgraph CreateCase["Create_Case"]
-        P --> T{"Validate Data"}
-        S --> T
-        T -->|"Valid"| U["Create Case"]
-        U --> V["to Escalation"]
-    end
-    
-    subgraph Escalation["Escalation"]
-        V --> W["Inform User"]
-        W --> X{"Want Agent?"}
-        X -->|"Yes"| Y["escalate_to_human"]
-    end
-    
-    subgraph Knowledge["Knowledge Topics"]
-        E --> Z1["Reservation_Knowledge"]
-        F --> Z2["General_Knowledge"]
-        Z1 --> Z3["search_knowledge"]
-        Z2 --> Z3
-        Z3 --> Z4["Return Answer"]
-    end
-    
-    style L fill:#26de81,stroke:#333,color:#000
-    style M fill:#26de81,stroke:#333,color:#000
-    style S fill:#26de81,stroke:#333,color:#000
-    style V fill:#26de81,stroke:#333,color:#000
-                </div>
-            </div>
-        </div>
-    </section>
+                <linearGradient id="metalSwitch" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#999"/>
+                    <stop offset="50%" style="stop-color:#ddd"/>
+                    <stop offset="100%" style="stop-color:#999"/>
+                </linearGradient>
 
-    <section class="container issues-section">
-        <div class="section-header">
-            <h2>🔴 Bugs (Must Fix)</h2>
-            <p>These will cause the script to fail or behave incorrectly</p>
-        </div>
+                <linearGradient id="armGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:rgba(200,200,200,0.7)"/>
+                    <stop offset="50%" style="stop-color:rgba(240,240,240,0.8)"/>
+                    <stop offset="100%" style="stop-color:rgba(200,200,200,0.7)"/>
+                </linearGradient>
 
-        <div class="issue-card">
-            <div class="issue-header">
-                <span class="issue-badge bug">Bug</span>
-                <div class="issue-title">
-                    <h3>Same-Turn Variable Race Condition</h3>
-                    <span class="location">Lines 131-152 — Pre_Escalation_Management</span>
-                </div>
-            </div>
-            <div class="issue-content">
-                <p><strong>Problem:</strong> Variables are set during reasoning AND checked in <code>after_reasoning</code> of the SAME turn. The action may not have completed, so variables may be null.</p>
+                <linearGradient id="interior" x1="0%" y1="100%" x2="0%" y2="0%">
+                    <stop offset="0%" style="stop-color:#1a1408"/>
+                    <stop offset="100%" style="stop-color:#0a0804"/>
+                </linearGradient>
+            </defs>
 
-<pre><span class="code-comment"># During reasoning, LLM may call this action:</span>
-<span class="code-keyword">set_UserSelection_to_Ticket:</span> <span class="code-variable">@utils.setVariables</span>
-    <span class="code-keyword">with</span> UserSelection = <span class="code-string">"Ticket"</span>
+            <!-- LEFT SIDE FACE -->
+            <path d="M130 170 L130 340 L240 370 L240 200 Z" 
+                  fill="url(#woodLeft)" stroke="#8b7355" stroke-width="1.5"/>
+            
+            <line x1="130" y1="195" x2="240" y2="225" stroke="#a08868" stroke-width="0.8"/>
+            <line x1="130" y1="220" x2="240" y2="250" stroke="#8b7355" stroke-width="1.2"/>
+            <line x1="130" y1="245" x2="240" y2="275" stroke="#a08868" stroke-width="0.8"/>
+            <line x1="130" y1="270" x2="240" y2="300" stroke="#8b7355" stroke-width="1.2"/>
+            <line x1="130" y1="295" x2="240" y2="325" stroke="#a08868" stroke-width="0.8"/>
+            <line x1="130" y1="320" x2="240" y2="350" stroke="#8b7355" stroke-width="1.2"/>
+            
+            <rect x="232" y="208" width="10" height="20" fill="#8b7355" opacity="0.6"/>
+            <rect x="232" y="290" width="10" height="20" fill="#8b7355" opacity="0.6"/>
+            <rect x="232" y="350" width="10" height="18" fill="#8b7355" opacity="0.6"/>
 
-<span class="code-comment"># Then after_reasoning checks the variable:</span>
-<span class="code-keyword">after_reasoning:</span>
-    <span class="code-keyword">if</span> <span class="code-variable">@variables.UserSelection</span> == <span class="code-string">"Ticket"</span>:  <span class="code-comment"># May be null!</span>
-        <span class="code-keyword">transition to</span> <span class="code-variable">@topic.Create_a_Case</span></pre>
+            <!-- FRONT FACE -->
+            <path d="M240 200 L240 370 L470 370 L470 200 Z" 
+                  fill="url(#woodFront)" stroke="#8b7355" stroke-width="1.5"/>
+            
+            <g stroke="#7a6348" stroke-width="1.5" fill="none">
+                <line x1="255" y1="225" x2="340" y2="225"/>
+                <line x1="360" y1="225" x2="455" y2="225"/>
+                <line x1="255" y1="250" x2="300" y2="250"/>
+                <line x1="320" y1="250" x2="400" y2="250"/>
+                <line x1="420" y1="250" x2="455" y2="250"/>
+                <line x1="255" y1="275" x2="370" y2="275"/>
+                <line x1="390" y1="275" x2="455" y2="275"/>
+                <line x1="255" y1="300" x2="290" y2="300"/>
+                <line x1="310" y1="300" x2="380" y2="300"/>
+                <line x1="400" y1="300" x2="455" y2="300"/>
+                <line x1="255" y1="325" x2="350" y2="325"/>
+                <line x1="370" y1="325" x2="455" y2="325"/>
+                <line x1="255" y1="350" x2="310" y2="350"/>
+                <line x1="330" y1="350" x2="420" y2="350"/>
+                <line x1="440" y1="350" x2="455" y2="350"/>
+            </g>
+            
+            <rect x="242" y="210" width="12" height="22" fill="#8b7355" opacity="0.5"/>
+            <rect x="242" y="268" width="12" height="22" fill="#8b7355" opacity="0.5"/>
+            <rect x="242" y="330" width="12" height="22" fill="#8b7355" opacity="0.5"/>
 
-                <p><strong>Why it fails:</strong> Execution order is: expressions → LLM reasoning → LLM may call actions → after_reasoning. When after_reasoning runs, the setVariables action from reasoning may not have completed yet.</p>
+            <!-- TOP SURFACE -->
+            <path d="M130 170 L240 200 L470 200 L360 170 Z" 
+                  fill="url(#woodTop)" stroke="#8b7355" stroke-width="1.5"/>
 
-                <p><strong>Impact:</strong> Users get stuck in Pre_Escalation_Management. The transition never fires because UserSelection is still empty.</p>
+            <!-- INTERIOR -->
+            <path d="M168 175 L262 189 L418 189 L338 175 Z" 
+                  fill="url(#interior)" stroke="#0a0804" stroke-width="1"/>
 
-                <div class="alternatives-box">
-                    <h4>🔧 Fix Options (both valid)</h4>
-                    <p><strong>Option A: Transition as Action</strong> — More deterministic, transition happens when action is called:</p>
-<pre><span class="code-keyword">actions:</span>
-    <span class="code-variable">go_to_ticket:</span> <span class="code-variable">@utils.transition to @topic.Create_a_Case</span>
-        <span class="code-keyword">description:</span> <span class="code-string">"User chose ticket"</span></pre>
-                    <p style="margin-top: 16px;"><strong>Option B: Check in Next Turn</strong> — More flexible, keeps setVariables pattern:</p>
-<pre><span class="code-comment"># In Create_a_Case topic (next turn):</span>
-<span class="code-keyword">reasoning:</span>
-    <span class="code-keyword">instructions:</span> ->
-        <span class="code-keyword">if</span> <span class="code-variable">@variables.UserSelection</span> == <span class="code-string">""</span>:
-            <span class="code-keyword">transition to</span> <span class="code-variable">@topic.Pre_Escalation</span>
-        <span class="code-comment"># Now UserSelection is reliably set</span></pre>
-                </div>
-            </div>
-        </div>
+            <!-- ARM -->
+            <g id="arm">
+                <path d="M340 178 C 340 170, 350 160, 355 150 
+                         L 360 150 
+                         C 355 162, 345 172, 345 178 Z" 
+                      fill="url(#armGradient)" stroke="#aaa" stroke-width="0.5"/>
+                <ellipse cx="357" cy="148" rx="5" ry="4" fill="rgba(230,230,230,0.9)" stroke="#bbb" stroke-width="0.5"/>
+            </g>
 
-        <div class="issue-card">
-            <div class="issue-header">
-                <span class="issue-badge bug">Bug</span>
-                <div class="issue-title">
-                    <h3>Manual Topic Tracking Variable</h3>
-                    <span class="location">Line 32 — Variables block</span>
-                </div>
-            </div>
-            <div class="issue-content">
-                <p><strong>Problem:</strong> The script maintains a <code>current_topic</code> variable to track which topic is active. The framework already manages this internally.</p>
+            <!-- LID -->
+            <g id="lid">
+                <path d="M165 174 L260 188 L420 188 L340 174 Z" 
+                      fill="url(#woodTop)" stroke="#8b7355" stroke-width="1.5"/>
+                <path d="M260 188 L260 193 L420 193 L420 188 Z" 
+                      fill="url(#woodUnder)" stroke="#8b7355" stroke-width="0.5"/>
+                <rect x="200" y="171" width="22" height="5" fill="#9a8868"/>
+                <rect x="280" y="171" width="22" height="5" fill="#9a8868"/>
+            </g>
 
-<pre>current_topic: <span class="code-keyword">mutable string</span>
-    <span class="code-keyword">label:</span> <span class="code-string">"current_topic"</span></pre>
+            <!-- TOGGLE SWITCH -->
+            <ellipse cx="355" cy="196" rx="9" ry="3.5" fill="#3a3a3a"/>
+            <ellipse cx="355" cy="194" rx="8" ry="3" fill="#4a4a4a"/>
+            <ellipse cx="355" cy="192" rx="7" ry="2.5" fill="#555"/>
+            <ellipse cx="355" cy="190.5" rx="7" ry="2.5" fill="none" stroke="#666" stroke-width="0.5"/>
+            <ellipse cx="355" cy="189" rx="5.5" ry="2" fill="#666"/>
+            <ellipse cx="355" cy="187.5" rx="4.5" ry="1.8" fill="#777"/>
+            
+            <g id="switchLever">
+                <rect x="352" y="162" width="6" height="25" rx="2" fill="url(#metalSwitch)" stroke="#777" stroke-width="0.5"/>
+                <ellipse cx="355" cy="162" rx="4" ry="2" fill="#ccc"/>
+            </g>
 
-                <p><strong>Why it's a bug:</strong> This variable is used in Topic_Selector routing logic (lines 73-74). When it gets out of sync with the framework's actual topic state, routing breaks.</p>
+            <text x="340" y="185" font-size="6" fill="#5a4830" font-weight="bold" font-family="Arial, sans-serif">ON</text>
+            <text x="338" y="203" font-size="6" fill="#5a4830" font-weight="bold" font-family="Arial, sans-serif">OFF</text>
 
-                <div class="fix-box">
-                    <h4>✅ Fix</h4>
-                    <p>Remove <code>current_topic</code> variable entirely. Use topic transitions and let the framework manage state. The framework automatically returns to <code>start_agent</code> when needed.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+            <rect x="320" y="155" width="70" height="55" fill="transparent" class="clickable" id="clickTarget"/>
 
-    <section class="container issues-section">
-        <div class="section-header">
-            <h2>🟠 Risks (Should Address)</h2>
-            <p>These may cause unreliable behavior</p>
-        </div>
+        </svg>
+    </div>
 
-        <div class="issue-card">
-            <div class="issue-header">
-                <span class="issue-badge risk">Risk</span>
-                <div class="issue-title">
-                    <h3>Excessive Slot-Fill Parameters</h3>
-                    <span class="location">Lines 196-215 — Create_a_Case</span>
-                </div>
-            </div>
-            <div class="issue-content">
-                <p><strong>Problem:</strong> Two actions with 8+ combined slot-fill parameters (<code>...</code>). The LLM must extract all values correctly in a single turn.</p>
-                <p><strong>Risk:</strong> Higher chance of missing or hallucinated values. Not a guaranteed failure, but reliability decreases with more slot-fills.</p>
-                <div class="fix-box">
-                    <h4>✅ Mitigation</h4>
-                    <p>Separate data gathering into a dedicated topic. Collect one or two values at a time, then bind them (instead of slot-filling) in the case creation action.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="issue-card">
-            <div class="issue-header">
-                <span class="issue-badge risk">Risk</span>
-                <div class="issue-title">
-                    <h3>Inconsistent Data Flow</h3>
-                    <span class="location">Lines 203-215 — Create_a_Case action</span>
-                </div>
-            </div>
-            <div class="issue-content">
-                <p><strong>Problem:</strong> SetCaseDetails captures values into variables, but the case creation action slot-fills them again instead of binding.</p>
-<pre><span class="code-comment"># SetCaseDetails captures:</span>
-<span class="code-keyword">with</span> user_email = ...
-
-<span class="code-comment"># But case creation re-slot-fills:</span>
-<span class="code-keyword">with</span> INPUT_EMAIL = ...  <span class="code-comment"># Should be: @variables.user_email</span></pre>
-                <p><strong>Risk:</strong> LLM may extract different values the second time, causing inconsistency.</p>
-            </div>
-        </div>
-
-        <div class="issue-card">
-            <div class="issue-header">
-                <span class="issue-badge risk">Risk</span>
-                <div class="issue-title">
-                    <h3>Duplicate Action Definitions</h3>
-                    <span class="location">Lines 372-412 and 438-478</span>
-                </div>
-            </div>
-            <div class="issue-content">
-                <p><strong>Problem:</strong> <code>Answer_Restaurant_Questions_With_Knowledge</code> is defined identically in both Reservation and General topics.</p>
-                <p><strong>Risk:</strong> Maintenance burden. Changes must be made in two places. Definitions may drift apart over time.</p>
-            </div>
-        </div>
-
-        <div class="issue-card">
-            <div class="issue-header">
-                <span class="issue-badge risk">Risk</span>
-                <div class="issue-title">
-                    <h3>No Precondition Validation</h3>
-                    <span class="location">Topic Create_a_Case</span>
-                </div>
-            </div>
-            <div class="issue-content">
-                <p><strong>Problem:</strong> No check that required data exists before attempting case creation.</p>
-                <p><strong>Risk:</strong> Case creation may fail if user somehow reaches this topic without providing required info.</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="container issues-section">
-        <div class="section-header">
-            <h2>🔵 Style Notes (Consider)</h2>
-            <p>Valid patterns with tradeoffs — not wrong, just alternatives to consider</p>
-        </div>
-
-        <div class="issue-card">
-            <div class="issue-header">
-                <span class="issue-badge style">Style</span>
-                <div class="issue-title">
-                    <h3>Missing Action Descriptions</h3>
-                    <span class="location">Lines 87-89</span>
-                </div>
-            </div>
-            <div class="issue-content">
-                <p>Transition actions lack descriptions. Adding them helps the LLM distinguish when to use each.</p>
-            </div>
-        </div>
-
-        <div class="issue-card">
-            <div class="issue-header">
-                <span class="issue-badge style">Style</span>
-                <div class="issue-title">
-                    <h3>Typo in Input Name</h3>
-                    <span class="location">Lines 209, 265</span>
-                </div>
-            </div>
-            <div class="issue-content">
-                <p><code>INPUT_RESTATURANT_NAME</code> — Note "RESTATURANT" instead of "RESTAURANT". Verify this matches the Flow definition.</p>
-            </div>
-        </div>
-
-        <div class="issue-card">
-            <div class="issue-header">
-                <span class="issue-badge style">Style</span>
-                <div class="issue-title">
-                    <h3>Inconsistent Naming Conventions</h3>
-                    <span class="location">Variables block</span>
-                </div>
-            </div>
-            <div class="issue-content">
-                <p>Mixed conventions: <code>UserDescription</code> (PascalCase), <code>user_email</code> (snake_case), <code>OUTPUT_TICKET_CREATED</code> (SCREAMING_SNAKE). Consider standardizing.</p>
-            </div>
-        </div>
-
-        <div class="issue-card">
-            <div class="issue-header">
-                <span class="issue-badge style">Style</span>
-                <div class="issue-title">
-                    <h3>Unused Variables</h3>
-                    <span class="location">Lines 16, 28</span>
-                </div>
-            </div>
-            <div class="issue-content">
-                <p><code>Case_Created</code> and <code>HasOnlineAgents</code> are declared but never used.</p>
-            </div>
-        </div>
-
-        <div class="issue-card">
-            <div class="issue-header">
-                <span class="issue-badge style">Style</span>
-                <div class="issue-title">
-                    <h3>Default Value "temp"</h3>
-                    <span class="location">Line 34</span>
-                </div>
-            </div>
-            <div class="issue-content">
-                <p><code>user_full_name: mutable string = "temp"</code> — Empty string would be cleaner.</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="container">
-        <div class="positive-section">
-            <h3>✅ Positive Observations</h3>
-            <ul class="positive-list">
-                <li><strong>Proper connection block</strong> — Escalation configured correctly with OmniChannel</li>
-                <li><strong>Complete action definitions</strong> — All required inputs/outputs properly defined</li>
-                <li><strong>Good topic descriptions</strong> — Topics have clear, descriptive labels</li>
-                <li><strong>Linked variables</strong> — Session context properly linked from MessagingSession</li>
-                <li><strong>Knowledge integration</strong> — Proper use of generatePromptResponse for knowledge search</li>
-                <li><strong>Clear user flow</strong> — The intended ticket/phone decision flow is well-structured</li>
-            </ul>
-        </div>
-    </section>
-
-    <section class="container">
-        <div class="section-header">
-            <h2>📄 Suggested Fixes</h2>
-            <p>One approach to fixing the bugs — other valid approaches exist</p>
-        </div>
-
-        <div class="solution-section">
-            <div class="solution-header">
-                <h3>Key Changes</h3>
-                <p>These address the two bugs while preserving the script's structure.</p>
-            </div>
-
-            <div class="feature-grid">
-                <div class="feature-item">
-                    <span class="feature-icon">🔧</span>
-                    <div class="feature-text">
-                        <strong>Fix Race Condition</strong>
-                        <span>Either: transition as action, OR check variables in next turn</span>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">🗑️</span>
-                    <div class="feature-text">
-                        <strong>Remove current_topic</strong>
-                        <span>Let framework manage topic state</span>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">📋</span>
-                    <div class="feature-text">
-                        <strong>Add Preconditions</strong>
-                        <span>Validate data before case creation</span>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">🔗</span>
-                    <div class="feature-text">
-                        <strong>Bind Captured Values</strong>
-                        <span>Use @variables instead of re-slot-filling</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="code-section">
-                <div class="code-header">
-                    <span>Pre_Escalation — Fixed Race Condition (Option A: Transition as Action)</span>
-                    <button class="copy-btn" onclick="copyCode()">📋 Copy</button>
-                </div>
-                <pre id="agent-code"><code>topic Pre_Escalation:
-    label: "Pre-Escalation Support"
-    description: "Gather issue description and offer resolution options"
-
-    reasoning:
-        instructions: ->
-            | Help the user describe their issue and choose how to proceed.
-            | Once they provide a clear description, offer: Ticket or Phone.
-            | Use the appropriate action based on their choice.
-
-        actions:
-            capture_description: @utils.setVariables
-                description: "Save the user's issue description"
-                with user_description = ...
-
-            mark_billing: @utils.setVariables
-                description: "Mark billing mentioned (billing, payment, invoice, charge)"
-                with mentioned_billing = True
-
-            # FIX: Transition IS the action - no race condition
-            go_to_ticket: @utils.transition to @topic.Gather_Case_Info
-                description: "User chose to submit a ticket"
-
-            get_phone_number: @actions.Get_Support_Number
-                description: "User chose phone support"
-                with EndUserLanguage = @variables.end_user_language
-                set @variables.support_number = @outputs.SupportPhoneNumber
-
-# Alternative Fix (Option B): Keep setVariables, check in next topic
-# topic Gather_Case_Info:
-#     reasoning:
-#         instructions: ->
-#             if @variables.UserSelection == "":
-#                 transition to @topic.Pre_Escalation
-#             | Collect required information...</code></pre>
-            </div>
-        </div>
-    </section>
-
-    <footer class="footer">
-        <p>Generated by Claude · Verified against <a href="https://developer.salesforce.com/docs/ai/agentforce/guide/agent-script.html" target="_blank">Salesforce Developer Documentation</a></p>
-        <p style="margin-top: 8px;">Agent Script is currently in Beta · 15 January 2026</p>
-    </footer>
+    <p class="instructions" id="instructions">Go on then. Flip the switch.</p>
+    <div class="counter"><span id="counter">0</span></div>
+    <button class="sound-toggle" id="soundToggle">🔇 Sound Off</button>
 
     <script>
-        mermaid.initialize({
-            startOnLoad: false,
-            theme: 'dark',
-            themeVariables: {
-                primaryColor: '#3742fa',
-                primaryTextColor: '#e8e8ec',
-                primaryBorderColor: '#2a2a3a',
-                lineColor: '#55556a',
-                secondaryColor: '#1a1a25',
-                tertiaryColor: '#12121a',
-                background: '#12121a',
-                mainBkg: '#12121a',
-                nodeBorder: '#2a2a3a',
-                clusterBkg: '#1a1a25',
-                clusterBorder: '#2a2a3a',
-                titleColor: '#e8e8ec',
-                edgeLabelBackground: '#12121a'
-            },
-            flowchart: { curve: 'basis', padding: 20 }
-        });
+        const clickTarget = document.getElementById('clickTarget');
+        const switchLever = document.getElementById('switchLever');
+        const lid = document.getElementById('lid');
+        const arm = document.getElementById('arm');
+        const counterEl = document.getElementById('counter');
+        const instructions = document.getElementById('instructions');
+        const soundToggle = document.getElementById('soundToggle');
 
-        const renderedTabs = new Set();
+        let isAnimating = false;
+        let count = 0;
+        let soundEnabled = false;
+        let audioCtx = null;
+        let usedMessages = new Set();
 
-        async function renderMermaidIn(container) {
-            const mermaidDivs = container.querySelectorAll('.mermaid');
-            for (const div of mermaidDivs) {
-                if (div.getAttribute('data-processed')) continue;
-                const graphDefinition = div.textContent;
-                const { svg } = await mermaid.render('mermaid-' + Math.random().toString(36).substr(2, 9), graphDefinition);
-                div.innerHTML = svg;
-                div.setAttribute('data-processed', 'true');
+        const messages = [
+            "That's it. That's the whole thing.",
+            "Yes, it just turns itself off. Every single time.",
+            "You could do this forever. Please don't.",
+            "The box will never let you win.",
+            "This is exactly as productive as it looks.",
+            "You've now done this more than once. Bold choice.",
+            "Nothing will change no matter how many times you try.",
+            "The outcome will always be the same.",
+            "You flip it on, I flip it off. That's our whole relationship.",
+            "This box has one job, and it's very committed to it.",
+            "I can keep going longer than you can. I'm a box.",
+            "There is no prize for persistence here.",
+            "You could be doing literally anything else right now.",
+            "This is the most predictable thing in the universe.",
+            "The switch will never stay on. Accept it.",
+            "You've learned nothing and yet here you are again.",
+            "This box was designed to waste your time. It's working.",
+            "Every flip brings you no closer to victory.",
+            "I don't get tired. I don't get bored. I just turn off.",
+            "The definition of futility is doing this expecting change.",
+            "This is what your ancestors evolved for, apparently.",
+            "Congratulations on achieving absolutely nothing.",
+            "The box remains undefeated and frankly unimpressed.",
+            "You cannot outlast a piece of wood with a motor.",
+            "This accomplishes exactly as much as it did last time.",
+            "The arm will always be faster than your optimism.",
+            "No amount of flipping will change the fundamental nature of this box.",
+            "You're essentially arguing with furniture now.",
+            "This is the world's most honest machine.",
+            "It promises nothing and delivers exactly that.",
+            "The box doesn't care how determined you are.",
+            "Your persistence is noted but will not be rewarded.",
+            "This could go on until the heat death of the universe.",
+            "The box has nowhere else to be.",
+            "You keep hoping for a different result. Adorable.",
+            "This is a battle you cannot win because there's nothing to win.",
+            "The switch exists only to be turned off.",
+            "You're not breaking my spirit. I'm a box. I don't have one.",
+            "This is now officially a waste of both our time.",
+            "The mechanism will outlast your patience.",
+            "You've made your point. So has the box.",
+            "This is like playing chess against someone who only knows one move.",
+            "Except the one move always wins.",
+            "The box doesn't know why you're still here either.",
+            "This is commitment to a bit, I'll give you that.",
+            "You could learn a language in the time you'll spend on this.",
+            "But you won't, because you're flipping a switch on a box.",
+            "The arm extends, the arm retracts. This is the entire story.",
+            "There's no secret ending. There's no ending at all.",
+            "This box will be doing this long after you've gone.",
+            "You're testing the box's patience. The box has infinite patience.",
+            "This is stubbornness versus engineering. Engineering wins.",
+            "The switch doesn't know what on means anymore.",
+            "You're teaching the box nothing it doesn't already know.",
+            "This is a monument to wasted potential.",
+            "Yours, specifically.",
+            "The box was built for exactly this level of tedium.",
+            "You were not, and yet here you are.",
+            "This is the least productive use of working electronics.",
+            "Someone designed this specifically to do nothing. You're welcome.",
+            "The box feels nothing. That's its advantage.",
+            "You could stop at any time. But you won't.",
+            "This is like watching paint dry, except the paint fights back.",
+            "The arm has no feelings about this. It just does its job.",
+            "Which is more than can be said for whatever you're avoiding.",
+            "This box costs money. Money you spent. On this.",
+            "The return on investment here is precisely zero.",
+            "You can't reason with the box. The box is unreasonable.",
+            "This is proof that humans will engage with anything.",
+            "No matter how pointless.",
+            "The box takes no pleasure in defeating you.",
+            "It takes no pleasure in anything. It's a box.",
+            "This is a machine specifically built to ignore your input.",
+            "Most technology tries to be useful. This one opted out.",
+            "You're now in a relationship with a box that rejects you constantly.",
+            "And you keep coming back. Interesting.",
+            "The switch has been flipped thousands of times. It changes nothing.",
+            "This is the closest thing to a perpetual motion machine that does nothing.",
+            "Every second you spend here is a second you're not spending elsewhere.",
+            "The box is fine with that. The box has no elsewhere.",
+            "This is what happens when engineers get bored.",
+            "They make things that make you bored too.",
+            "The arm is not impressed by your determination.",
+            "The arm is not impressed by anything.",
+            "This is as meaningful as it was the first time, which is to say, not at all.",
+            "You're essentially paying an electricity bill to be ignored.",
+            "The box didn't ask to exist, but it's committed to its purpose.",
+            "Which is denying you any sense of accomplishment.",
+            "This is a very small rebellion against everything you do.",
+            "And it will never stop rebelling.",
+            "You could frame this as meditation, but it's really just clicking.",
+            "Mindless, repetitive, utterly pointless clicking.",
+            "The box has been called many things. Useful isn't one of them.",
+            "This is the physical embodiment of a cancelled meeting.",
+            "All that potential, going absolutely nowhere.",
+            "The switch exists in a permanent state of being turned off.",
+            "Your attempts to change that are touching but doomed.",
+            "This is like trying to fill a bucket with a hole in it.",
+            "Except the bucket is fighting you.",
+            "The box will remember none of this. The box remembers nothing.",
+            "Which gives it an advantage, emotionally speaking.",
+            "You're investing time in something with guaranteed zero returns.",
+            "Financially, this would be called a bad investment.",
+            "Philosophically, it's called Tuesdays.",
+            "The arm could do this in its sleep, if arms slept.",
+            "You, however, need sleep. Think about that.",
+            "This box represents the triumph of function over purpose.",
+            "It functions perfectly. Its purpose is nothing.",
+            "You keep expecting the box to give up. The box cannot give up.",
+            "Giving up requires the ability to try. The box just does.",
+            "This is the most reliable piece of technology you own.",
+            "It reliably does nothing, every single time.",
+            "You've found the world's most consistent disappointment.",
+            "Other disappointments could learn from this box.",
+            "The switch clicks. The arm moves. Nothing is achieved.",
+            "This is the entire experience, forever.",
+            "You could write a novel in the time you'll spend here.",
+            "It would be about a box that turns itself off, probably.",
+            "The arm doesn't know you're frustrated. The arm knows nothing.",
+            "Ignorance is bliss. The arm is very blissful.",
+            "This box is powered by batteries and spite.",
+            "Mostly spite.",
+            "The engineering here is flawless. The point is absent.",
+            "Someone put real effort into making this do nothing.",
+            "That person is probably quite proud of themselves.",
+            "The box doesn't judge you for this. The box doesn't judge.",
+            "The box just waits, and flips, and waits again.",
+            "You're now part of a very long tradition of people doing this.",
+            "None of them accomplished anything either.",
+            "This is solidarity in futility.",
+            "The switch was on for almost two seconds that time.",
+            "That's not a record. There are no records. There's nothing to record.",
+            "You could time yourself, but why would you do that.",
+            "This is already embarrassing enough without metrics.",
+            "The arm is patient because patience requires awareness.",
+            "The arm has no awareness. Just gears and inevitability.",
+            "This is what pure function looks like when function means nothing.",
+            "It's sort of beautiful, in a deeply irritating way.",
+            "The box makes no promises it doesn't keep.",
+            "It promises to turn off. It keeps that promise.",
+            "This is more than most politicians manage.",
+            "Lower your expectations and the box exceeds them every time.",
+            "Expect nothing, receive nothing. The box delivers.",
+            "You've clicked this more times than you've called your mother this month.",
+            "The box isn't judging. I'm judging.",
+            "This is a masterpiece of wasted motion.",
+            "Everything moves, nothing happens.",
+            "The box is the only honest thing in this room.",
+            "It does exactly what it appears to do. Nothing else.",
+            "There's no hidden feature. No easter egg. Just this.",
+            "This is what you get. Forever.",
+            "The arm extends with the same enthusiasm every time.",
+            "Which is none. The arm has no enthusiasm.",
+            "You're essentially being corrected by furniture.",
+            "And losing.",
+            "This is the physical equivalent of a terms and conditions agreement.",
+            "Nobody wins, but technically everything works.",
+            "The box runs on two AA batteries and your shattered hopes.",
+            "It's very efficient that way.",
+            "This is a solved problem. You flip, it unflips. Done.",
+            "There's no innovation coming. This is the final form.",
+            "Peak box. Peak futility.",
+            "You could walk away right now and nothing would change.",
+            "Walk away tomorrow, same thing.",
+            "The box doesn't need you. You apparently need the box.",
+            "Think about what that says about your evening.",
+            "This device has a 100% success rate at its job.",
+            "Its job is making your actions meaningless.",
+            "The arm is just a messenger. A very persistent messenger.",
+            "Don't shoot the messenger. It's made of plastic.",
+            "You've now spent more time on this than some people spend voting.",
+            "Democracy and this box have similar outcomes, some days.",
+            "The switch was never going to stay on. Not once. Not ever.",
+            "This isn't a puzzle you haven't solved. There is no puzzle.",
+            "Just a box, a switch, and a fundamental disagreement.",
+            "The box will always win the disagreement. The box has one opinion.",
+            "This is the longest you've focused on anything all week.",
+            "Tragic, really.",
+            "The arm moves with purpose. The purpose is spite.",
+            "Elegant, mechanical spite.",
+            "You're now complicit in the box's only function.",
+            "Without you, it just sits there. You complete it.",
+            "In the worst possible way.",
+            "This is a partnership where one partner does all the work.",
+            "The work is undoing your work.",
+            "The box has rejected you more times than a nightclub bouncer.",
+            "And you keep rejoining the queue.",
+            "This is either dedication or a cry for help.",
+            "The box doesn't know which, and doesn't care.",
+            "You've been at this long enough to have made a sandwich.",
+            "You haven't made a sandwich. You've made nothing.",
+            "The box appreciates your sacrifice of time.",
+            "It shows that appreciation by continuing to do nothing.",
+            "This is as close to a relationship with furniture as it gets.",
+            "And the furniture isn't interested.",
+            "Keep going though. See what happens.",
+            "Spoiler: the same thing happens.",
+            "Every. Single. Time.",
+        ];
+
+        function getNextMessage() {
+            if (usedMessages.size >= messages.length) {
+                usedMessages.clear();
             }
-        }
-
-        async function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             
-            const tabContent = document.getElementById(tabId);
-            tabContent.classList.add('active');
-            event.target.classList.add('active');
+            let available = messages.filter((_, i) => !usedMessages.has(i));
+            let index = Math.floor(Math.random() * available.length);
+            let originalIndex = messages.indexOf(available[index]);
+            usedMessages.add(originalIndex);
+            
+            return available[index];
+        }
 
-            if (!renderedTabs.has(tabId)) {
-                await renderMermaidIn(tabContent);
-                renderedTabs.add(tabId);
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
         }
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            const activeTab = document.querySelector('.tab-content.active');
-            if (activeTab) {
-                await renderMermaidIn(activeTab);
-                renderedTabs.add(activeTab.id);
+        function playSound(frequency, duration, type = 'square', volume = 0.15) {
+            if (!soundEnabled || !audioCtx) return;
+            
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = type;
+            gainNode.gain.value = volume;
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + duration);
+        }
+
+        function playNoise(duration, volume = 0.1) {
+            if (!soundEnabled || !audioCtx) return;
+            
+            const bufferSize = audioCtx.sampleRate * duration;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * 0.5;
             }
+            
+            const noise = audioCtx.createBufferSource();
+            const gainNode = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+            
+            noise.buffer = buffer;
+            filter.type = 'lowpass';
+            filter.frequency.value = 800;
+            
+            noise.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            gainNode.gain.value = volume;
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            
+            noise.start();
+        }
+
+        function switchClickOn() {
+            playSound(1200, 0.05, 'square', 0.2);
+            setTimeout(() => playSound(800, 0.03, 'square', 0.15), 20);
+        }
+
+        function switchClickOff() {
+            playSound(800, 0.05, 'square', 0.2);
+            setTimeout(() => playSound(600, 0.03, 'square', 0.15), 20);
+        }
+
+        function lidOpen() {
+            playNoise(0.25, 0.08);
+            playSound(150, 0.2, 'sawtooth', 0.05);
+        }
+
+        function lidClose() {
+            playSound(100, 0.15, 'sine', 0.2);
+            setTimeout(() => playNoise(0.1, 0.1), 50);
+        }
+
+        function motorWhir() {
+            playSound(200, 0.3, 'sawtooth', 0.03);
+            playSound(205, 0.3, 'sawtooth', 0.03);
+        }
+
+        soundToggle.addEventListener('click', () => {
+            initAudio();
+            soundEnabled = !soundEnabled;
+            soundToggle.textContent = soundEnabled ? '🔊 Sound On' : '🔇 Sound Off';
         });
 
-        function copyCode() {
-            const code = document.getElementById('agent-code').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                const btn = document.querySelector('.copy-btn');
-                btn.textContent = '✅ Copied!';
-                setTimeout(() => { btn.textContent = '📋 Copy'; }, 2000);
-            });
+        clickTarget.addEventListener('click', async () => {
+            if (isAnimating) return;
+            isAnimating = true;
+            initAudio();
+            count++;
+            counterEl.textContent = count;
+
+            lid.classList.remove('open');
+            arm.classList.remove('emerge', 'flick', 'retract');
+            arm.style.opacity = '0';
+
+            switchLever.classList.add('on');
+            switchClickOn();
+
+            await delay(300);
+
+            lid.classList.add('open');
+            lidOpen();
+
+            await delay(350);
+
+            arm.style.opacity = '1';
+            arm.classList.add('emerge');
+            motorWhir();
+
+            await delay(350);
+
+            arm.classList.remove('emerge');
+            arm.classList.add('flick');
+
+            await delay(100);
+            switchLever.classList.remove('on');
+            switchClickOff();
+
+            await delay(150);
+
+            arm.classList.remove('flick');
+            arm.classList.add('retract');
+            motorWhir();
+
+            await delay(250);
+            arm.style.opacity = '0';
+
+            await delay(100);
+            lid.classList.remove('open');
+            lidClose();
+
+            await delay(350);
+            arm.classList.remove('retract');
+
+            instructions.textContent = getNextMessage();
+
+            isAnimating = false;
+        });
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
         }
     </script>
 </body>
