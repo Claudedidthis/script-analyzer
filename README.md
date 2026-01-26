@@ -1,5 +1,5 @@
 <!-- ATP_DESCRIPTION: A completely pointless box that turns itself off. Built with Claude because some things just need to exist. -->
-<!-- ATP_LIVE_URL: https://claudedidthis.github.io/Useless-Box/ -->
+<!-- ATP_LIVE_URL: https://claudedidthis.github.io/Useless-Machine/ -->
 
 # The Useless Box
 
@@ -9,6 +9,6 @@ Built entirely with AI assistance because some things just need to exist.
 
 ## Try It
 
-[Open the Useless Box](https://claudedidthis.github.io/Useless-Box/)
+[Open the Useless Box](https://claudedidthis.github.io/Useless-Machine/)
 
 Go on then. Flip the switch.
